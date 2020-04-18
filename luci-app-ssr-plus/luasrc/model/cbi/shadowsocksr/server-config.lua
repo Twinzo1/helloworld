@@ -1,8 +1,5 @@
 -- Copyright (C) 2017 yushi studio <ywb94@qq.com>
 -- Licensed to the public under the GNU General Public License v3.
-require "luci.http"
-require "luci.dispatcher"
-require "nixio.fs"
 
 local m, s, o
 local shadowsocksr = "shadowsocksr"
@@ -45,7 +42,7 @@ obfs = {
 
 m = Map(shadowsocksr, translate("Edit ShadowSocksR Server"))
 
-m.redirect = luci.dispatcher.build_url("admin/services/shadowsocksr/server")
+m.redirect = luci.dispatcher.build_url("admin/vpn/shadowsocksr/server")
 if m.uci:get(shadowsocksr, sid) ~= "server_config" then
 	luci.http.redirect(m.redirect)
 	return
@@ -64,10 +61,8 @@ o.default = 1
 o.rmempty = false
 
 o = s:option(ListValue, "type", translate("Server Type"))
-o:value("socks5", translate("Socks5"))
-if nixio.fs.access("/usr/bin/ssr-server") then
 o:value("ssr", translate("ShadowsocksR"))
-end
+o:value("socks5", translate("Socks5"))
 o.default = "socks5"
 
 o = s:option(Value, "server_port", translate("Server Port"))

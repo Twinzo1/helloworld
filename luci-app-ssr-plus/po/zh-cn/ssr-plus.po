@@ -460,6 +460,9 @@ msgstr "不走代理的局域网LAN IP"
 msgid "LAN Force Proxy Host List"
 msgstr "全局代理的LAN IP"
 
+msgid "MAC Force Proxy Host List"
+msgstr "全局代理的MAC"
+
 msgid "Router Self AC"
 msgstr "路由器自身代理设置"
 
@@ -520,6 +523,9 @@ msgstr "输入不正确的参数组合可能会导致服务无法启动"
 msgid "Game Mode Host List"
 msgstr "增强游戏模式客户端LAN IP"
 
+msgid "MAC Game Mode Host List"
+msgstr "增强游戏模式客户端MAC"
+
 msgid "Multi Threads Option"
 msgstr "多线程并发转发"
 
@@ -579,6 +585,23 @@ msgstr "修改订阅URL和节点关键字后，请先点击更新"
 
 msgid "Update All Subscribe Severs"
 msgstr "更新所有订阅服务器节点"
+
+msgid "MAC Host List"
+msgstr "MAC主机列表"
+
+
+msgid "MAC AC"
+msgstr "MAC访问控制"
+
+
+msgid "MAC Acess Control"
+msgstr "MAC访问控制"
+
+msgid "V2ray binary file"
+msgstr "V2ray二进制文件"
+
+msgid "The url of v2ray binary file or ipk package"
+msgstr "V2ray可执行文件或ipk包下载链接"
 
 msgid "Plugin"
 msgstr "插件"

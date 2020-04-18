@@ -58,6 +58,51 @@ luci.ip.neighbors({ family = 4 }, function(entry)
 		end
 end)
 
+-- Part of MAC
+s:tab("mac_ac", translate("MAC AC"))
+
+o = s:taboption("mac_ac", ListValue, "mac_ac_mode", translate("MAC Acess Control"))
+o:value("0", translate("Disable"))
+o:value("w", translate("Allow listed only"))
+o:value("b", translate("Allow all except listed"))
+o.rmempty = false
+
+o = s:taboption("mac_ac", DynamicList, "mac_ac", translate("MAC Host List"))
+o.datatype = "ipaddr"
+luci.ip.neighbors({ family = 4 }, function(entry)
+		if entry.reachable then
+			o:value(entry.dest:string())
+		end
+end)
+o:depends("lan_ac_mode", "w")
+o:depends("lan_ac_mode", "b")
+
+o = s:taboption("mac_ac", DynamicList, "mac_bp", translate("MAC Bypassed Host List"))
+o.datatype = "macaddr"
+luci.sys.net.mac_hints(function(x,d)
+	if not luci.ip.new(d) then
+		o:value(x,"%s (%s)"%{x,d})
+	end
+
+end)
+
+o = s:taboption("mac_ac", DynamicList, "mac_fp", translate("MAC Force Proxy Host List"))
+o.datatype = "macaddr"
+luci.sys.net.mac_hints(function(x,d)
+	if not luci.ip.new(d) then
+		o:value(x,"%s (%s)"%{x,d})
+	end
+end)
+
+o = s:taboption("mac_ac", DynamicList, "mac_gm", translate("MAC Game Mode Host List"))
+o.datatype = "macaddr"
+luci.sys.net.mac_hints(function(x,d)
+	if not luci.ip.new(d) then
+		o:value(x,"%s (%s)"%{x,d})
+	end
+
+end)
+
 -- Part of Self
 -- s:tab("self_ac", translate("Router Self AC"))
 -- o = s:taboption("self_ac",ListValue, "router_proxy", translate("Router Self Proxy"))
