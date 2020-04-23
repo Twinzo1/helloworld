@@ -334,7 +334,7 @@ start_redir() {
 			[ ! -d  "/tmp/v2ray/v2ipk" ] && mkdir /tmp/v2ray/v2ipk
 			output=`curl $v2ray_url > /tmp/v2ray/v2ray`
 			iszip=`unzip -o /tmp/v2ray/v2ray -d /tmp/v2ray/v2ipk 1>/dev/null` # no output: v2ray is zip
-			[ -z "$iszip" ] && cp -f /tmp/v2ray/v2ipk/v2ray* /tmp/v2ray/v2ray
+			[ -z "$iszip" ] && cp -f /tmp/v2ray/v2ipk/*/v2ray* /tmp/v2ray/v2ray
 			extract=`tar zxvf /tmp/v2ray/v2ray -C /tmp/v2ray/v2ipk 1>/dev/null` # no output: v2ray is ipk
 			if [ -z $extract ]; then 
 				tar zxvf /tmp/v2ray/v2ipk/data.tar.gz -C /tmp/v2ray/v2ipk
@@ -384,7 +384,7 @@ start_redir() {
 			[ ! -d  "/tmp/v2ray/v2ipk" ] && mkdir /tmp/v2ray/v2ipk
 			output=`curl $v2ray_url > /tmp/v2ray/v2ray`
 			iszip=`unzip -o /tmp/v2ray/v2ray -d /tmp/v2ray/v2ipk 1>/dev/null` # no output: v2ray is zip
-			[ -z "$iszip" ] && cp -f /tmp/v2ray/v2ipk/v2ray* /tmp/v2ray/v2ray
+			[ -z "$iszip" ] && cp -f /tmp/v2ray/v2ipk/*/v2ray* /tmp/v2ray/v2ray
 			extract=`tar zxvf /tmp/v2ray/v2ray -C /tmp/v2ray/v2ipk 1>/dev/null` # no output: v2ray is ipk
 			if [ -z $extract ]; then 
 				tar zxvf /tmp/v2ray/v2ipk/data.tar.gz -C /tmp/v2ray/v2ipk
