@@ -327,17 +327,21 @@ start_redir() {
 	elif [ "$stype" == "v2ray" ]; then
 		sscmd="/usr/bin/v2ray/v2ray"
 		[ ! -f "$sscmd" ] && sscmd="/usr/bin/v2ray"
+		[ ! -f "$sscmd" ] && sscmd="/tmp/v2ray/v2ray"
 		if [ ! -f "$sscmd" ]; then
 			v2ray_url=`uci get shadowsocksr.@global[0].v2ray_url`
 			[ ! -d  "/tmp/v2ray" ] && mkdir /tmp/v2ray
-			mkdir /tmp/v2ray/v2ipk
-			curl $v2ray_url > /tmp/v2ray/v2ray
-			if [ -n `tar zxvf /tmp/v2ray/v2ray -C /tmp/v2ray/v2ipk` ]; then 
-				tar /tmp/v2ray/v2ipk/data.tar.gz -C /tmp/v2ray/v2ipk
-				cp -f /tmp/v2ray/v2ipk/v2ray /tmp/v2ray/v2ray
-				rm -f /tmp/v2ray/v2ipk
+			[ ! -d  "/tmp/v2ray/v2ipk" ] && mkdir /tmp/v2ray/v2ipk
+			output=`curl $v2ray_url > /tmp/v2ray/v2ray`
+			iszip=`unzip -o /tmp/v2ray/v2ray -d /tmp/v2ray/v2ipk 1>/dev/null` # no output: v2ray is zip
+			[ -z "$iszip" ] && cp -f /tmp/v2ray/v2ipk/v2ray* /tmp/v2ray/v2ray
+			extract=`tar zxvf /tmp/v2ray/v2ray -C /tmp/v2ray/v2ipk 1>/dev/null` # no output: v2ray is ipk
+			if [ -z $extract ]; then 
+				tar zxvf /tmp/v2ray/v2ipk/data.tar.gz -C /tmp/v2ray/v2ipk
+				cp -f /tmp/v2ray/v2ipk/usr/bin/v2ray/v2ray /tmp/v2ray/v2ray
+				rm -rf /tmp/v2ray/v2ipk
 			fi
-			sscmd="/tmp/v2ray/v2ray"
+			chmod 755 $sscmd
 		fi
 	elif [ "$stype" == "trojan" ]; then
 		sscmd="/usr/sbin/trojan"
@@ -373,17 +377,21 @@ start_redir() {
 	elif [ "$utype" == "v2ray" ]; then
 		ucmd="/usr/bin/v2ray/v2ray"
 		[ ! -f "$ucmd" ] && ucmd="/usr/bin/v2ray"
+		[ ! -f "$ucmd" ] && ucmd="/tmp/v2ray/v2ray"
 		if [ ! -f "$ucmd" ]; then
 			v2ray_url=`uci get shadowsocksr.@global[0].v2ray_url`
 			[ ! -d  "/tmp/v2ray" ] && mkdir /tmp/v2ray
-			mkdir /tmp/v2ray/v2ipk
-			curl $v2ray_url > /tmp/v2ray/v2ray
-			if [ -n `tar zxvf /tmp/v2ray/v2ray -C /tmp/v2ray/v2ipk` ]; then 
-				tar /tmp/v2ray/v2ipk/data.tar.gz -C /tmp/v2ray/v2ipk
-				cp -f /tmp/v2ray/v2ipk/v2ray /tmp/v2ray/v2ray
-				rm -f /tmp/v2ray/v2ipk
+			[ ! -d  "/tmp/v2ray/v2ipk" ] && mkdir /tmp/v2ray/v2ipk
+			output=`curl $v2ray_url > /tmp/v2ray/v2ray`
+			iszip=`unzip -o /tmp/v2ray/v2ray -d /tmp/v2ray/v2ipk 1>/dev/null` # no output: v2ray is zip
+			[ -z "$iszip" ] && cp -f /tmp/v2ray/v2ipk/v2ray* /tmp/v2ray/v2ray
+			extract=`tar zxvf /tmp/v2ray/v2ray -C /tmp/v2ray/v2ipk 1>/dev/null` # no output: v2ray is ipk
+			if [ -z $extract ]; then 
+				tar zxvf /tmp/v2ray/v2ipk/data.tar.gz -C /tmp/v2ray/v2ipk
+				cp -f /tmp/v2ray/v2ipk/usr/bin/v2ray/v2ray /tmp/v2ray/v2ray
+				rm -rf /tmp/v2ray/v2ipk
 			fi
-			ucmd="/tmp/v2ray/v2ray"
+			chmod 755 $ucmd
 		fi
 	elif [ "$utype" == "trojan" ]; then
 		ucmd="/usr/sbin/trojan"
