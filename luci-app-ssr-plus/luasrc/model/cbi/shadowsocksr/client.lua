@@ -5,12 +5,9 @@
 local m, s, sec, o, kcp_enable
 local shadowsocksr = "shadowsocksr"
 local uci = luci.model.uci.cursor()
-
-local sys = require "luci.sys"
-
 m = Map(shadowsocksr, translate("ShadowSocksR Plus+ Settings"))
 
-m:section(SimpleSection).template  = "shadowsocksr/status"
+m:section(SimpleSection).template = "shadowsocksr/status"
 
 local server_table = {}
 uci:foreach(shadowsocksr, "servers", function(s)
@@ -106,5 +103,4 @@ o.description = translate("Custom DNS Server format as IP:PORT (default: 8.8.4.4
 
 o = s:option(Value, "v2ray_url", translate("V2ray binary file"), translate("The url of v2ray binary file or ipk package"))
 return m
-
 
