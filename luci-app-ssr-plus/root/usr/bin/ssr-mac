@@ -1,7 +1,7 @@
 #!/bin/sh 
 #
 # Copyright (C) 2020 openwrt-ssr
-# Copyright (C) 2017 Twinzo1 studio <1282055288@qq.com>
+# Copyright (C) 2020 Twinzo1 studio <1282055288@qq.com>
 #
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
@@ -10,32 +10,116 @@
 
 
 NAME=shadowsocksr
-
-uci_get_by_name() {
-	local ret=$(uci get $NAME.$1.$2 2>/dev/null)
-	echo ${ret:=$3}
-}
+TYPE=access_control
+MAC_AC_FILES=/etc/ssr/m_ac_conf
+MAC_CONF=/etc/ssr/mac_tmp_conf
 
 uci_get_by_type() {
-	local ret=$(uci get $NAME.@$1[0].$2 2>/dev/null)
-	echo ${ret:=$3}
+	local ret=$(uci get $NAME.@${TYPE}[0].${1} 2>/dev/null)
+	echo ${ret:=$2}
 }
 
-#返回对应ip
-return_mac_ip() {
-	local mac=$1
-	echo `cat /proc/net/arp | grep $mac | awk '{print $1}'`
+uci_set_by_type() {
+	uci set $NAME.@${TYPE}[0].${1}="$2"
 }
 
-check ip
-#redir tcp
-			if [ $redir_tcp_process -gt 0 ] ;then
-			icount=`busybox ps -w | grep ssr-retcp |grep -v grep| wc -l`
-			if [ $icount = 0 ] ;then
-			logger -t "$NAME" "ssr redir tcp error.restart!"
-			 /etc/init.d/shadowsocksr restart 
-			exit 0
-			fi
-			fi
+#返回mac地址对应ip
+return_ip(){
+	local mac=${1}
+	[ -n "$mac" ] && echo `cat /proc/net/arp | grep -i "$mac" | awk '{print $1}'` || echo ""
+}
+
+# 检查dhcp对应的ip是否变化
+detect_dhcp(){
+	local lists_sum=`uci_get_by_type ${1}_macs | sed 's/ /\n/g' | wc -l`
+	uci_get_by_type ${1}_macs | sed 's/ /\n/g' > ${MAC_CONF}_${1}
+	local i=$lists_sum
+	local mac_ip mac
+	while [[ $i -gt 0 ]]
+	do
+		mac=`cat ${MAC_CONF}_${1} | head -${i} | tail -1`
+		mac_ip=`return_ip $mac`
+		[ -n "$mac" ] && old_ip=`cat $MAC_AC_FILES 2>/dev/null | grep -i "$mac" | awk -F " " '{print $2}'` || old_ip=""
+		[ -z "$old_ip"  -a "$old_ip" != "$mac_ip" ] && {echo "yes" && i=0}
+		[ $i -le 0 ] || i=$((i-1))
+	done
+}
+
+# additional ips
+# copy lan_ac_ips to lan_ac_ad_ips
+add_ad_ips(){
+	local lists_sum=`uci_get_by_type ${1} | sed 's/ /\n/g' | wc -l`
+	uci_get_by_type ${1} | sed 's/ /\n/g' > ${MAC_CONF}_ips_${1}
+	local i=$lists_sum
+	[ "$lists_sum"x = "0"x ] && uci delete $NAME.@${TYPE}[0].${1}
+	while [[ $i -gt 0 ]]
+	do
+		ip=`cat ${MAC_CONF}_ips_${1} | head -${i} | tail -1`
+		[ $i -eq $lists_sum ] && uci_set_by_type ${1}_ad $ip || uci add_list $NAME.@${TYPE}[0].${1}_ad="$ip"
+		[ $i -le 0 ] || i=$((i-1))
+	done
+}
+
+return_new_ips(){
+	touch $MAC_AC_FILES && rm -f $MAC_AC_FILES 2>/dev/null
+	local lists_sum=`uci_get_by_type ${1}_macs | sed 's/ /\n/g' | wc -l`
+	uci_get_by_type ${1}_macs | sed 's/ /\n/g' > ${MAC_CONF}_macs_${1}
+	local i=$lists_sum
+	local mac mac_ip
+	add_ad_ips ${1}_ips
+	while [[ $i -gt 0 ]]
+	do
+		mac=`cat ${MAC_CONF}_macs_${1} | head -${i} | tail -1`
+		mac_ip=`return_ip $mac`
+		uci add_list $NAME.@${TYPE}[0].${1}_ips_ad="$mac_ip"
+		echo "$mac $mac_ip" >> $MAC_AC_FILES
+		[ $i -le 0 ] || i=$((i-1))
+	done
+	uci commit $NAME 
+}
+
+detect_dhcp_cron(){
+	touch $MAC_AC_FILES && rm -f $MAC_AC_FILES 2>/dev/null
+	local lists_sum=`uci_get_by_type ${1}_macs | sed 's/ /\n/g' | wc -l`
+	uci_get_by_type ${1}_macs | sed 's/ /\n/g' > ${MAC_CONF}_macs_${1}
+	local i=$lists_sum
+	local mac mac_ip
+	add_ad_ips ${1}_ips
+	while [[ $i -gt 0 ]]
+	do
+		mac=`cat ${MAC_CONF}_macs_${1} | head -${i} | tail -1`
+		mac_ip=`return_ip $mac`
+		uci add_list $NAME.@${TYPE}[0].${1}_ips_ad="$mac_ip"
+		echo "$mac $mac_ip" >> $MAC_AC_FILES
+		[ $i -le 0 ] || i=$((i-1))
+	done
+}
+
+ips_init(){
+	return_new_ips lan_ac
+	return_new_ips lan_bp
+	return_new_ips lan_fp
+	return_new_ips lan_gm
+}
+
+detect_dhcp_init(){
+	local ip_change=`detect_dhcp ${1}`
+	[ -z "$ip_change" ] && return
+	detect_dhcp_cron lan_ac
+	detect_dhcp_cron lan_bp
+	detect_dhcp_cron lan_fp
+	detect_dhcp_cron lan_gm
+	uci commit $NAME
+	/etc/init.d/$NAME restart
+}
+
+case $1 in
+	detect)  detect_dhcp_init
+	;;
+	init) ips_init
+	;;
+	*) echo "$(date "+%Y-%m-%d %H:%M:%S") ssr-mac: wrong parameter" >>/tmp/ssrplus.log
+	;;
+esac
 
 
