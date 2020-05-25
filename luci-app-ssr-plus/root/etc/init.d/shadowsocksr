@@ -115,7 +115,7 @@ v2ray_bin(){
 	if [ ! -f "$ret" ]; then
 		ret="/tmp/v2ray/v2ray"
 		local isBin
-		isBin=`$ret 2>/dev/null 2>&1`
+		isBin=`$ret --version 2>/dev/null 2>&1`
 		if [ ! -f "$ret" -o -z "$isBin" ]; then
 			v2ray_url=`uci get shadowsocksr.@global[0].v2ray_url`
 			[ ! -d  "/tmp/v2ray" ] && mkdir /tmp/v2ray
