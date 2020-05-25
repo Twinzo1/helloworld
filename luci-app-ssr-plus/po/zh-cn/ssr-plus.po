@@ -602,15 +602,18 @@ msgid "MAC Host List"
 msgstr "MAC主机列表"
 
 
-msgid "MAC AC"
-msgstr "MAC访问控制"
+msgid "MAC Bypassed Host List"
+msgstr "不走代理的MAC"
 
 
-msgid "MAC Acess Control"
-msgstr "MAC访问控制"
+msgid "Detect time"
+msgstr "DHCP检测时间"
 
 msgid "V2ray binary file"
 msgstr "V2ray二进制文件"
+
+msgid "Detect the change of DHCP for minites"
+msgstr "几分钟检测一次DHCP是否有变化"
 
 msgid "The url of v2ray binary file or ipk package"
 msgstr "V2ray可执行文件或ipk包下载链接"
