@@ -84,8 +84,8 @@ add_cron() {
 	touch $CRON_FILE
 	sed -i '/shadowsocksr/d' $CRON_FILE
 	[ $(uci_get_by_type server_subscribe auto_update 0) -eq 1 ] && echo "0 $(uci_get_by_type server_subscribe auto_update_time) * * * /usr/share/shadowsocksr/ssrplusupdate.sh >>/tmp/ssrplus.log 2>&1" >>$CRON_FILE
-	local detect_time=$(uci_get_by_type access_control dhcp_detect)
-	[ -z "$detect_time" -o "$detect_time"x != "0"x ] && echo "*/${detect_time} * * * * /usr/bin/ssr-mac dtetct #added by shadowsocksr-ssr-mac >>/tmp/ssrplus.log 2>&1" >>$CRON_FILE
+	local detect_time=$(uci_get_by_type access_control dhcp_detect 0)
+	[ "$detect_time"x != "0"x ] && echo "*/${detect_time} * * * * /usr/bin/ssr-mac dtetct #added by shadowsocksr-ssr-mac >>/tmp/ssrplus.log 2>&1" >>$CRON_FILE
 	crontab $CRON_FILE
 }
 
