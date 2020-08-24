@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-ssr-plus
 PKG_VERSION:=180
-PKG_RELEASE:=3
+PKG_RELEASE:=5
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -43,7 +43,7 @@ PKG_CONFIG_DEPENDS:= \
 LUCI_TITLE:=SS/SSR/V2Ray/Trojan/Socks5/Tun LuCI interface
 LUCI_PKGARCH:=all
 LUCI_DEPENDS:=+shadowsocksr-libev-alt +ipset +ip-full +iptables-mod-tproxy +dnsmasq-full +coreutils +coreutils-base64 +pdnsd-alt +wget +lua +libuci-lua \
-	+microsocks +dns2socks +shadowsocks-libev-ss-local +shadowsocksr-libev-ssr-local +shadowsocks-libev-ss-redir +simple-obfs +tcpping +unzip +resolveip\
+	+microsocks +dns2socks +shadowsocks-libev-ss-local +shadowsocksr-libev-ssr-local +shadowsocks-libev-ss-redir +simple-obfs +tcping +unzip +resolveip\
 	+PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_plugin:v2ray-plugin \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_V2ray:v2ray \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:trojan \
@@ -53,5 +53,3 @@ LUCI_DEPENDS:=+shadowsocksr-libev-alt +ipset +ip-full +iptables-mod-tproxy +dnsm
 	+PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server:shadowsocksr-libev-server
 
 include $(TOPDIR)/feeds/luci/luci.mk
-
-# call BuildPackage - OpenWrt buildroot signature
